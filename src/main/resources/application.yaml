@@ -1,0 +1,55 @@
+spring:
+  application:
+    name: ms-music-media
+
+  config:
+    import: "optional:consul:"
+
+  mongodb:
+      host: ${MONGO_HOST:localhost}
+      port: ${MONGO_PORT:27017}
+      database: ${MONGO_DB:world_dance_music}
+
+  cloud:
+    consul:
+      host: "${SPRING_CLOUD_CONSUL_HOST:consul}"
+      port: "${SPRING_CLOUD_CONSUL_PORT:8500}"
+      discovery:
+        enabled: true
+        register: true
+        service-name: ms-music-media
+        health-check-path: /api/v1/actuator/health
+        health-check-interval: 10s
+        instance-id: "${spring.application.name}:${random.value}"
+        prefer-ip-address: false
+
+  main:
+    allow-bean-definition-overriding: true
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+  endpoint:
+    health:
+      show-details: always
+  health:
+    mongodb:
+      enabled: true
+
+server:
+  port: 9096
+  servlet:
+    context-path: /api/v1
+
+security:
+  jwt:
+    secret-key: "${JWT_SECRET:F0bVQgRnuk6DRxooVWKaG0ndlgqEeI/4YXObXeOaR2Q=}"
