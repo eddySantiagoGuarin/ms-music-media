@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.springframework.core.io.Resource;
@@ -368,6 +370,15 @@ public class MusicTrackServiceImpl implements MusicTrackService {
         if (track.getStatus() != null) {
             dto.setIsActive(track.getStatus().getIsActive());
             dto.setUploadedAt(track.getStatus().getUploadedAt());
+        }
+        if (track.getHistory() != null) {
+            List<MusicTrackResponseDto.HistoryEntryDto> history = track.getHistory().stream()
+                    .map(log -> MusicTrackResponseDto.HistoryEntryDto.builder()
+                            .previousFilename(log.getPreviousFilename())
+                            .replacedAt(log.getReplacedAt())
+                            .build())
+                    .collect(Collectors.toList());
+            dto.setHistory(history);
         }
         return dto;
     }
